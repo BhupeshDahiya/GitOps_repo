@@ -1,5 +1,29 @@
+# Local .terraform directories
+**/.terraform/*
 .terraform/
+
+# .tfstate files (CRITICAL: Never commit these. You are using remote S3 state anyway)
 *.tfstate
 *.tfstate.*
 crash.log
-terraform.tfvars
+crash.*.log
+
+# Terraform Plan Files
+*.tfplan
+*.plan
+tfplan
+
+*.tfvars
+*.tfvars.json
+*auto.tfvars
+
+# Keys & Certificates
+*.pem
+*.key
+*.pub
+
+# OS & IDE Files
+.DS_Store
+.vscode/
+.idea/
+*.swp
