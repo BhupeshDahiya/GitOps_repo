@@ -1,4 +1,4 @@
-## Bastion and SSM usecase
+# Bastion and SSM usecase
 
 Here I have used a bastion host in a public subnet to access my other resources residing in the private subnet, if I were to do this setup for a org/enterprise 
 I would not create a public subnet or the bastion host, I'll just attach the Teams logins with the AWS IAM identity center 
@@ -72,3 +72,29 @@ I eliminated the traditional Bastion host to reduce the public attack surface. I
 In this project, EC2 instances are provisioned in strictly private subnets with IAM instance profiles allowing SSM connections. 
 In an enterprise environment, engineers would authenticate via corporate SSO, assume a role with SSM permissions, 
 and securely tunnel into the instances without ever exposing port 22 or managing physical SSH keys.
+
+
+# How to access jenkins and nexus ddeployed in private subnet
+
+## SSH port forwarding
+
+I'll be using a ssh tunnel in gitbash and map a empty port on my pc to private port of jenkins/nexus using bastion as bridge
+
+1. To Access Jenkins (Private Port 8080)
+```Bash
+ssh -i "your-key.pem" -L 9090:JENKINS_PRIVATE_IP:8080 ubuntu@BASTION_PUBLIC_IP -N
+```
+- Then go to chrome and `http://localhost:9090`
+2. To Access Nexus (Private Port 8081)
+```Bash
+ssh -i "your-key.pem" -L 9091:NEXUS_PRIVATE_IP:8081 ubuntu@BASTION_PUBLIC_IP -N
+```
+- Then go to chrome and `http://localhost:8081`
+
+
+Breaking Down What the Flags Mean:
+`-L 9090:JENKINS_PRIVATE_IP:8080` : This is the magic flag. It says: "Take port 9090 on my laptop, and forward whatever hits it to JENKINS_PRIVATE_IP:8080 via the Bastion connection."
+
+`-N` : This tells SSH not to open an interactive terminal shell. It tells it to just sit there quietly and hold the tunnel open.
+
+As long as that Git Bash window stays open, your tunnel is alive. You go to localhost:9090 for Jenkins, and localhost:9091 for Nexus. The moment you press Ctrl + C in your terminal, the tunnel snaps shut, and the private instances are completely isolated from the world again.
