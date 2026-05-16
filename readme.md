@@ -1,0 +1,74 @@
+## Bastion and SSM usecase
+
+Here I have used a bastion host in a public subnet to access my other resources residing in the private subnet, if I were to do this setup for a org/enterprise 
+I would not create a public subnet or the bastion host, I'll just attach the Teams logins with the AWS IAM identity center 
+
+> if a company uses Microsoft Teams and Office 365, they will use Microsoft Entra ID [formerly Azure AD] to manage employee logins, these logins can be used by AWS to 
+> login into AWS CLI using your standard corporate email and pass
+
+> AWS grants you a temporary session under an IAM Role (e.g., CloudEngineer-ReadOnly).
+
+> That role has the AmazonSSMManagedInstanceCore and ReadOnlyAccess policies attached.
+
+> You open your local terminal and run aws ssm start-session --target i-0abcd1234... and you are instantly securely dropped into the EC2 instance's shell.
+
+## How to exectue this handshake
+
+### Phase 1: Prepare AWS IAM Identity Center
+First, you need to tell AWS to stop managing users itself and prepare to listen to an external directory.
+
+- Open the AWS Console and navigate to IAM Identity Center.
+
+- Enable the service (if you haven't already in your organization).
+
+- Go to Settings > Identity source and click Change identity source.
+
+- Select External identity provider.
+
+- In the Service provider metadata section, click Download metadata file. You now have the AWS XML file; keep it handy. Leave this AWS window open.
+
+### Phase 2: Create the Enterprise App in Entra ID
+Now, you head over to the Microsoft side to set up the application that will "push" identities to AWS.
+
+- Log into the Microsoft Entra admin center (formerly Azure Portal).
+
+- Navigate to Identity > Applications > Enterprise applications.
+
+- Click New application and search the gallery for AWS IAM Identity Center. Add it.
+
+- Once created, go to the Single sign-on tab on the left menu and select SAML.
+
+### Phase 3: The Metadata Handshake
+This is where the two systems exchange cryptographic trust.
+
+- Tell Entra about AWS: On the Entra SAML page, click Upload metadata file and select the XML file you downloaded from AWS in Phase 1. This automatically populates the AWS entity IDs and reply URLs in Azure.
+
+- Tell AWS about Entra: Scroll down on that same Entra SAML page to the SAML Certificates section and download the Federation Metadata XML.
+
+- Go back to your open AWS IAM Identity Center tab. In the Identity provider metadata section, upload this Entra XML file.
+
+- Click Next, review, and type ACCEPT to finalize the identity source change.
+
+- At this point, the SAML authentication bridge is built. If a user tries to log into AWS, it will redirect them to a Microsoft login screen.
+
+### Phase 4: Configure SCIM (The Enterprise Magic)
+Without SCIM, you would have to manually create a user in AWS and perfectly match their email to their Entra ID account. At scale, that's impossible. SCIM automates this.
+
+- In AWS IAM Identity Center, go to Settings > Automatic provisioning and click Enable.
+
+- AWS will generate two crucial pieces of data: a SCIM endpoint URL and an Access token. Copy both securely.
+
+- Back in Entra ID, go to your AWS Enterprise Application and click the Provisioning tab.
+
+- Set the Provisioning Mode to Automatic.
+
+- Under Admin Credentials, paste the Tenant URL (the SCIM endpoint) and the Secret Token (the Access token) you got from AWS.
+
+- Click Test Connection (it should succeed), save, and then toggle the Provisioning Status to On.
+
+## For Interviews
+
+I eliminated the traditional Bastion host to reduce the public attack surface. Instead, the infrastructure relies on AWS Systems Manager (SSM).
+In this project, EC2 instances are provisioned in strictly private subnets with IAM instance profiles allowing SSM connections. 
+In an enterprise environment, engineers would authenticate via corporate SSO, assume a role with SSM permissions, 
+and securely tunnel into the instances without ever exposing port 22 or managing physical SSH keys.
