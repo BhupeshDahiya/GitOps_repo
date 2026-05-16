@@ -2,7 +2,7 @@
 **/.terraform/*
 .terraform/
 
-# .tfstate files (CRITICAL: Never commit these. You are using remote S3 state anyway)
+# state files (CRITICAL: Never commit these. using remote S3 state anyway)
 *.tfstate
 *.tfstate.*
 crash.log
@@ -16,6 +16,14 @@ tfplan
 *.tfvars
 *.tfvars.json
 *auto.tfvars
+_override.tf
+_override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local CLI configuration files
+.terraformrc
+terraform.rc
 
 # Keys & Certificates
 *.pem
