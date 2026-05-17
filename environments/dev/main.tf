@@ -11,7 +11,7 @@ module "jenkins" {
   source = "../../modules/jenkins"
   jenkins_sg_id = module.security.jenkins_sg
   pub_sub = module.vpc.pub_sub
-  public_key = module.jenkins.public_key
+  public_key = var.public_key
 }
 
 module "nexus" {
