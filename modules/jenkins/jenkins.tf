@@ -1,6 +1,6 @@
 resource "aws_key_pair" "gitops_key" {
   key_name   = "gitops-key"
-  public_key = file("${path.module}/../../gitops_key.pub") # Reads local public key file
+  public_key = var.public_key
 }
 
 resource "aws_instance" "jenkins" {

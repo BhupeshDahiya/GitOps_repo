@@ -2,3 +2,7 @@
 variable "my_ip" {
   type = string
 }
+
+variable "public_key" {
+  type = string
+}
