@@ -99,3 +99,15 @@ resource "aws_route_table_association" "pvt" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.pvt_rt.id
 }
+
+output "vpc_id" {
+    value = aws_vpc.gitops_vpc.id
+}
+
+output "pub_sub" {
+  value = aws_subnet.public.id
+}
+
+output "pvt_sub" {
+  value = aws_subnet.private.id
+}

@@ -24,6 +24,10 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_from_bastion" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
+output "bastion_sg" {
+  description = "Id of the sg for bastion"
+  value       = aws_security_group.bastion_sg.id
+}
 
 ##  Jenkins SG
 
@@ -60,6 +64,10 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_jenkins" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
+output "jenkins_sg" {
+  description = "Id of the sg for jenkins"
+  value       = aws_security_group.jenkins_sg.id
+}
 
 ## Nexus SG
 
@@ -112,6 +120,10 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_from_nexus" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
+output "nexus_sg" {
+  description = "Id of the sg for nexus"
+  value       = aws_security_group.nexus_sg.id
+}
 
 ## EKS SG
 
@@ -155,4 +167,9 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_from_eks" {
   security_group_id = aws_security_group.eks_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+output "eks_sg" {
+  description = "Id of the sg for eks"
+  value       = aws_security_group.eks_sg.id
 }
