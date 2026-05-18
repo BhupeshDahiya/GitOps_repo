@@ -6,3 +6,7 @@ variable "my_ip" {
 variable "public_key" {
   type = string
 }
+
+variable "bastion_pub_key" {
+  type = string
+}

@@ -3,9 +3,9 @@ variable "jenkins_sg_id"{
     description = "Id of the jenkins SG"
 }
 
-variable "pub_sub" {
+variable "pvt_sub" {
   type = string
-  description = "ID of the public subnet"
+  description = "ID of the private subnet"
 }
 
 variable "public_key" {
