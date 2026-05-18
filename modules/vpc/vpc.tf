@@ -110,4 +110,13 @@ output "pub_sub" {
 
 output "pvt_sub" {
   value = aws_subnet.private.id
+
+  # forcing Terraform to hold back any instance using this subnet
+  # until the NAT Gateway and Route Table Mappings are 100% complete!
+  # had to do this because pvt subnet gets created relatively faster than the nat gateway and thus EC2 just picks up this 
+  # pvt subnet and starts the bootstrap script which requires internet connection via NAT gateway and fails if it cant connect
+  depends_on  = [
+    aws_nat_gateway.nat,
+    aws_route_table_association.pvt
+  ]
 }

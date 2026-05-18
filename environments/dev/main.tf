@@ -1,30 +1,43 @@
+# using a shared key for both jenkins and nexus
+resource "aws_key_pair" "gitops_key" {
+  key_name   = "gitops-key"
+  public_key = var.public_key # Pulled from your GitHub Secrets / tfvars
+}
+
+# passing the bastion key
+resource "aws_key_pair" "bastion_pub_key" {
+  key_name = "bastion-gitops-key"
+  public_key       = var.bastion_pub_key
+}
+
 module "vpc" {
   source = "../../modules/vpc"
 }
 
 module "bastion" {
   source = "../../modules/bastion"
-  bastion_pub_key = var.bastion_pub_key
-  bastion_sg_id = module.security.bastion_sg
-  pub_sub = module.vpc.pub_sub
-  # public_subnet = module.vpc.public_subnet_1_id 
+  # bastion_pub_key = var.bastion_pub_key # bastion has its own key defined in its module
+  bastion_key_name = aws_key_pair.bastion_pub_key.key_name
+  bastion_sg_id    = module.security.bastion_sg
+  pub_sub          = module.vpc.pub_sub
 }
 
 module "jenkins" {
-  source = "../../modules/jenkins"
+  source        = "../../modules/jenkins"
   jenkins_sg_id = module.security.jenkins_sg
-  pvt_sub = module.vpc.pvt_sub
-  public_key = var.public_key
+  pvt_sub       = module.vpc.pvt_sub
+  key_name      = aws_key_pair.gitops_key.key_name #passing the key name of shared key
 }
 
 module "nexus" {
-  source = "../../modules/nexus"
-  # private_subnet = module.vpc.private_subnet_2_id 
+  source      = "../../modules/nexus"
+  pvt_sub     = module.vpc.pvt_sub
+  nexus_sg_id = module.security.nexus_sg
+  key_name    = aws_key_pair.gitops_key.key_name
 }
 
 module "eks" {
   source = "../../modules/eks"
-  # private_subnets = module.vpc.private_subnets 
 }
 
 # 2. passes the fetched IP down into the security module block.

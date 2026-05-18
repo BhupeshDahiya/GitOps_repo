@@ -1,12 +1,7 @@
-resource "aws_key_pair" "bastion_pub_key" {
-  key_name   = "bastion-gitops-key"
-  public_key = var.bastion_pub_key
-}
-
 resource "aws_instance" "bastion" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
-  key_name      = aws_key_pair.bastion_pub_key.key_name # Hooks the key to the instance
+  key_name      = var.bastion_key_name # Hooks the key to the instance
   vpc_security_group_ids = [var.bastion_sg_id]
   # availability_zone      = "us-east-1a"
   subnet_id = var.pub_sub

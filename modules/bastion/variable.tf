@@ -1,4 +1,4 @@
-variable "bastion_pub_key" {
+variable "bastion_key_name" {
   type = string
 }
 

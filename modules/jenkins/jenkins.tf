@@ -1,12 +1,7 @@
-resource "aws_key_pair" "gitops_key" {
-  key_name   = "gitops-key"
-  public_key = var.public_key
-}
-
 resource "aws_instance" "jenkins" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.medium"
-  key_name      = aws_key_pair.gitops_key.key_name # Hooks the key to the instance
+  key_name      = var.key_name # Hooks the key to the instance
   vpc_security_group_ids = [var.jenkins_sg_id]
   # availability_zone      = "us-east-1a"
   subnet_id = var.pvt_sub

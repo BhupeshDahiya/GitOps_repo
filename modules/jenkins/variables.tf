@@ -8,7 +8,7 @@ variable "pvt_sub" {
   description = "ID of the private subnet"
 }
 
-variable "public_key" {
+variable "key_name" {
     type = string
     description = ".pub key for ssh access to jenkins"
 }
