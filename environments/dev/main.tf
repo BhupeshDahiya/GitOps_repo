@@ -6,8 +6,8 @@ resource "aws_key_pair" "gitops_key" {
 
 # passing the bastion key
 resource "aws_key_pair" "bastion_pub_key" {
-  key_name = "bastion-gitops-key"
-  public_key       = var.bastion_pub_key
+  key_name   = "bastion-gitops-key"
+  public_key = var.bastion_pub_key
 }
 
 module "vpc" {
@@ -36,8 +36,16 @@ module "nexus" {
   key_name    = aws_key_pair.gitops_key.key_name
 }
 
+module "iam" {
+  source = "../../modules/iam"
+}
+
 module "eks" {
-  source = "../../modules/eks"
+  source                  = "../../modules/eks"
+  eks_cluster_role_arn    = module.iam.eks_cluster_role_arn
+  pvt_sub                 = module.vpc.pvt_sub
+  pvt_sub_2 = module.vpc.pvt_sub_2
+  eks_node_group_role_arn = module.iam.eks_node_group_role_arn
 }
 
 # 2. passes the fetched IP down into the security module block.
