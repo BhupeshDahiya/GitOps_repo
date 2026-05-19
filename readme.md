@@ -98,3 +98,16 @@ Breaking Down What the Flags Mean:
 `-N` : This tells SSH not to open an interactive terminal shell. It tells it to just sit there quietly and hold the tunnel open.
 
 As long as that Git Bash window stays open, your tunnel is alive. You go to localhost:9090 for Jenkins, and localhost:9091 for Nexus. The moment you press Ctrl + C in your terminal, the tunnel snaps shut, and the private instances are completely isolated from the world again.
+
+## For troubleshooting
+```bash
+eval $(ssh-agent -s) # load your keys into CLI's memeory
+ssh-add bastion.pem
+ssh-add nexus/jenkins.pem
+
+# Jump through the Bastion straight to the private Nexus IP
+ssh -A -i bastion.pem ubuntu@bastion_ip # -A : Enables authentication agent forwarding. This allows the remote server to use your local SSH agent (ssh-agent) to authenticate you onto subsequent machines (like a jump host or bastion) without copying your private keys to the intermediate server.
+# -a: Disables authentication agent forwarding. This explicitly prevents your local SSH agent from being passed to the remote machine, protecting your keys if the remote server is compromised.
+
+# Once inside the Bastion, hop directly onto the new Nexus private IP:
+ssh ubuntu@nexus_ip
