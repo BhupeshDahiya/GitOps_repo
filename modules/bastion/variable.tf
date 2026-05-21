@@ -9,3 +9,7 @@ variable "bastion_sg_id" {
 variable "pub_sub" {
   type = string
 }
+
+variable "bastion_eks_profile" {
+  type = string
+}

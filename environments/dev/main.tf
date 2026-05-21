@@ -20,6 +20,7 @@ module "bastion" {
   bastion_key_name = aws_key_pair.bastion_pub_key.key_name
   bastion_sg_id    = module.security.bastion_sg
   pub_sub          = module.vpc.pub_sub
+  bastion_eks_profile =  module.iam.bastion_eks_profile
 }
 
 module "jenkins" {
