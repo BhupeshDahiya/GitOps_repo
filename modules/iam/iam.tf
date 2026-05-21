@@ -59,6 +59,47 @@ resource "aws_iam_role_policy_attachment" "ECR_read_only_node_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" # Direct atatch using ARN as im using a default policy
 }
 
+
+# Bastion EKS role
+
+# 1. Create the Trust Policy allowing EC2 to assume this role
+resource "aws_iam_role" "bastion_eks_access" {
+  name = "bastion_eks_access"
+  # Defininf a assume role policy which would let only the allowed services to assume this role
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com" # which service can assume this role, EC2 here will be our nodes in the cluster
+        }
+      },
+    ]
+  })
+}
+# 2. Attach EKS describe permissions so update-kubeconfig works
+resource "aws_iam_role_policy_attachment" "bastion_eks_access" {
+  role       = aws_iam_role.bastion_eks_access.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" # Direct atatch using ARN as im using a default policy
+}
+
+# 3. Create the Instance Profile wrapper that EC2 actually uses
+# 4. Output the profile name to use in your bastion module
+resource "aws_iam_instance_profile" "bastion_eks_profile" {
+  name = "bastion_eks_profile"
+  role = aws_iam_role.bastion_eks_access.name
+}
+
+
+# Ouputs
+
+output "bastion_eks_profile" {
+  value = aws_iam_instance_profile.bastion_eks_profile.name
+}
+
 output "eks_cluster_role_arn" {
   value = aws_iam_role.eks_cluster_role.arn
 }
