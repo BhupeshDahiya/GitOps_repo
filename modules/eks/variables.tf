@@ -13,3 +13,7 @@ variable "pvt_sub_2" {
 variable "eks_node_group_role_arn" {
   type = string
 }
+
+variable "bastion_eks_role_arn" {
+  type = string
+}

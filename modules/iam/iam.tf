@@ -88,6 +88,7 @@ resource "aws_iam_role_policy_attachment" "bastion_eks_access" {
 
 # 3. Create the Instance Profile wrapper that EC2 actually uses
 # 4. Output the profile name to use in your bastion module
+# 5. Output the arn and use in EKS to allow bastion
 resource "aws_iam_instance_profile" "bastion_eks_profile" {
   name = "bastion_eks_profile"
   role = aws_iam_role.bastion_eks_access.name
@@ -99,6 +100,11 @@ resource "aws_iam_instance_profile" "bastion_eks_profile" {
 output "bastion_eks_profile" {
   value = aws_iam_instance_profile.bastion_eks_profile.name
 }
+
+output "bastion_eks_profile_arn" {
+  value = aws_iam_instance_profile.bastion_eks_profile.arn
+}
+
 
 output "eks_cluster_role_arn" {
   value = aws_iam_role.eks_cluster_role.arn

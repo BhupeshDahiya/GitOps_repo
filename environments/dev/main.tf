@@ -47,6 +47,7 @@ module "eks" {
   pvt_sub                 = module.vpc.pvt_sub
   pvt_sub_2               = module.vpc.pvt_sub_2
   eks_node_group_role_arn = module.iam.eks_node_group_role_arn
+  bastion_eks_role_arn = module.iam.bastion_eks_profile_arn
 }
 
 # 2. passes the fetched IP down into the security module block.
