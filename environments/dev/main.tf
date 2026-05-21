@@ -17,10 +17,10 @@ module "vpc" {
 module "bastion" {
   source = "../../modules/bastion"
   # bastion_pub_key = var.bastion_pub_key # bastion has its own key defined in its module
-  bastion_key_name = aws_key_pair.bastion_pub_key.key_name
-  bastion_sg_id    = module.security.bastion_sg
-  pub_sub          = module.vpc.pub_sub
-  bastion_eks_profile =  module.iam.bastion_eks_profile
+  bastion_key_name    = aws_key_pair.bastion_pub_key.key_name
+  bastion_sg_id       = module.security.bastion_sg
+  pub_sub             = module.vpc.pub_sub
+  bastion_eks_profile = module.iam.bastion_eks_profile
 }
 
 module "jenkins" {
@@ -45,7 +45,7 @@ module "eks" {
   source                  = "../../modules/eks"
   eks_cluster_role_arn    = module.iam.eks_cluster_role_arn
   pvt_sub                 = module.vpc.pvt_sub
-  pvt_sub_2 = module.vpc.pvt_sub_2
+  pvt_sub_2               = module.vpc.pvt_sub_2
   eks_node_group_role_arn = module.iam.eks_node_group_role_arn
 }
 

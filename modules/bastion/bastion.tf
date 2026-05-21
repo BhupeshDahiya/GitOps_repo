@@ -4,9 +4,9 @@ resource "aws_instance" "bastion" {
   key_name               = var.bastion_key_name # Hooks the key to the instance
   vpc_security_group_ids = [var.bastion_sg_id]
   # availability_zone      = "us-east-1a"
-  subnet_id = var.pub_sub
+  subnet_id            = var.pub_sub
   iam_instance_profile = var.bastion_eks_profile
-  
+
   root_block_device {
     volume_size           = 8
     volume_type           = "gp3"
