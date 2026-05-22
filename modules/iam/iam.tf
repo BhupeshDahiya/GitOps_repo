@@ -81,9 +81,23 @@ resource "aws_iam_role" "bastion_eks_access" {
   })
 }
 # 2. Attach EKS describe permissions so update-kubeconfig works
-resource "aws_iam_role_policy_attachment" "bastion_eks_access" {
-  role       = aws_iam_role.bastion_eks_access.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" # Direct atatch using ARN as im using a default policy
+resource "aws_iam_role_policy" "bastion_eks_cli_access" {
+  name = "bastion_eks_cli_access_policy"
+  role = aws_iam_role.bastion_eks_access.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters"
+        ]
+        Resource = "*" # Allows discovery tracking across your EKS resource workspace
+      }
+    ]
+  })
 }
 
 # 3. Create the Instance Profile wrapper that EC2 actually uses
