@@ -5,6 +5,7 @@ resource "aws_instance" "sonarqube" {
   vpc_security_group_ids = [var.sonarqube_sg]
   # availability_zone      = "us-east-1a"
   subnet_id            = var.pvt_sub
+  user_data = file("${path.module}/../../modules/sonarqube/sonar.sh") # path to the script to be run for instance
 
   root_block_device {
     volume_size           = 20
