@@ -90,6 +90,11 @@ ssh -i "your-key.pem" -L 9090:JENKINS_PRIVATE_IP:8080 ubuntu@BASTION_PUBLIC_IP -
 ssh -i "your-key.pem" -L 9091:NEXUS_PRIVATE_IP:8081 ubuntu@BASTION_PUBLIC_IP -N
 ```
 - Then go to chrome and `http://localhost:8081`
+3. To Access Sonarqube (Private Port 9000)
+```Bash
+ssh -i "your-key.pem" -L 9092:SONARQUBE_PRIVATE_IP:9000 ubuntu@BASTION_PUBLIC_IP -N
+```
+- Then go to chrome and `http://localhost:9092`
 
 
 Breaking Down What the Flags Mean:

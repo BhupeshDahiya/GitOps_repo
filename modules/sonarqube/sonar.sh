@@ -1,8 +1,8 @@
 #!/bin/bash
-# Direct all outputs to a log file for easy debugging via Bastion
+# Direct all outputs to a log file for real-time tracking via Bastion
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-echo "==================== STARTING SONARQUBE DEPLOYMENT ===================="
+echo "==================== STARTING SONARQUBE LTA DEPLOYMENT ===================="
 
 # 1. Apply mandatory kernel parameters required by SonarQube's embedded Elasticsearch
 cp /etc/sysctl.conf /root/sysctl.conf_backup
@@ -33,13 +33,13 @@ apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin do
 systemctl enable docker
 systemctl start docker
 
-# 4. Create a dedicated application space with stateful volume persistence
+# 4. Create dedicated application space with stateful volume persistence
 mkdir -p /opt/sonarqube-stack/data
 mkdir -p /opt/sonarqube-stack/extensions
 mkdir -p /opt/sonarqube-stack/logs
 mkdir -p /opt/sonarqube-stack/postgres_data
 
-# Fix permissions for the mapped folders (Elasticsearch container runs as UID 1000)
+# Fix permissions for mapped folders (Elasticsearch container runs as UID 1000)
 chown -R 1000:1000 /opt/sonarqube-stack/data /opt/sonarqube-stack/extensions /opt/sonarqube-stack/logs
 
 # 5. Establish the multi-container stack deployment layout
@@ -61,7 +61,7 @@ services:
     restart: always
 
   sonarqube:
-    image: sonarqube:9.9-community
+    image: sonarqube:2025.1-community  
     container_name: sonarqube-app
     depends_on:
       - sonarqube-db
@@ -70,7 +70,7 @@ services:
     environment:
       - SONAR_JDBC_USERNAME=sonar
       - SONAR_JDBC_PASSWORD=sonar_secure_pass123
-      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube-db:54432/sonarqube?currentSchema=public
+      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube-db:5432/sonarqube?currentSchema=public 
     volumes:
       - /opt/sonarqube-stack/data:/opt/sonarqube/data
       - /opt/sonarqube-stack/extensions:/opt/sonarqube/extensions
