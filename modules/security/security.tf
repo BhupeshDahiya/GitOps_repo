@@ -189,27 +189,27 @@ resource "aws_security_group" "sonarqube_sg" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_from_bastion_into_sonarqube" {
-  security_group_id = aws_security_group.sonarqube_sg.id
+  security_group_id            = aws_security_group.sonarqube_sg.id
   referenced_security_group_id = aws_security_group.bastion_sg.id
-  from_port = 22
-  ip_protocol       = "TCP" # semantically equivalent to all ports
-  to_port = 22
+  from_port                    = 22
+  ip_protocol                  = "TCP" # semantically equivalent to all ports
+  to_port                      = 22
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_web_from_bastion_into_sonarqube" {
-  security_group_id = aws_security_group.sonarqube_sg.id
+  security_group_id            = aws_security_group.sonarqube_sg.id
   referenced_security_group_id = aws_security_group.bastion_sg.id
-  from_port = 9000
-  ip_protocol       = "TCP" # semantically equivalent to all ports
-  to_port = 9000
+  from_port                    = 9000
+  ip_protocol                  = "TCP" # semantically equivalent to all ports
+  to_port                      = 9000
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_jenkins_to_sonarqube" {
-  security_group_id = aws_security_group.sonarqube_sg.id
+  security_group_id            = aws_security_group.sonarqube_sg.id
   referenced_security_group_id = aws_security_group.jenkins_sg.id
-  from_port = 9000
-  ip_protocol       = "TCP" # semantically equivalent to all ports
-  to_port = 9000
+  from_port                    = 9000
+  ip_protocol                  = "TCP" # semantically equivalent to all ports
+  to_port                      = 9000
 }
 
 

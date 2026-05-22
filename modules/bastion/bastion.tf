@@ -6,6 +6,7 @@ resource "aws_instance" "bastion" {
   # availability_zone      = "us-east-1a"
   subnet_id            = var.pub_sub
   iam_instance_profile = var.bastion_eks_profile
+  user_data            = file("${path.module}/../../modules/bastion/bastion.sh") # path to the script to be run for instance
 
   root_block_device {
     volume_size           = 8

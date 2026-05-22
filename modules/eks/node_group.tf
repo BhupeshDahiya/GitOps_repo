@@ -1,4 +1,4 @@
-resource "aws_eks_node_group" "example" {
+resource "aws_eks_node_group" "gitops_node_group" {
   cluster_name    = aws_eks_cluster.gitops_cluster.name
   node_group_name = "gitops_node_group"
   node_role_arn   = var.eks_node_group_role_arn

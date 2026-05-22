@@ -105,6 +105,10 @@ output "bastion_eks_profile_arn" {
   value = aws_iam_instance_profile.bastion_eks_profile.arn
 }
 
+output "bastion_eks_IAM_role_arn" {
+  value       = aws_iam_role.bastion_eks_access.arn
+  description = "The IAM Role ARN of the Bastion host proxy"
+}
 
 output "eks_cluster_role_arn" {
   value = aws_iam_role.eks_cluster_role.arn
