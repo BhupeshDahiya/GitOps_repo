@@ -173,3 +173,53 @@ output "eks_sg" {
   description = "Id of the sg for eks"
   value       = aws_security_group.eks_sg.id
 }
+
+
+## Sonarqube SG
+
+
+resource "aws_security_group" "sonarqube_sg" {
+  name        = "Allow SSH from bastion and jenkins access"
+  description = "Allow SSH inbound traffic and all outbound traffic"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "SonarQube"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_from_bastion_into_sonarqube" {
+  security_group_id = aws_security_group.sonarqube_sg.id
+  referenced_security_group_id = aws_security_group.bastion_sg.id
+  from_port = 22
+  ip_protocol       = "TCP" # semantically equivalent to all ports
+  to_port = 22
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_web_from_bastion_into_sonarqube" {
+  security_group_id = aws_security_group.sonarqube_sg.id
+  referenced_security_group_id = aws_security_group.bastion_sg.id
+  from_port = 9000
+  ip_protocol       = "TCP" # semantically equivalent to all ports
+  to_port = 9000
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_jenkins_to_sonarqube" {
+  security_group_id = aws_security_group.sonarqube_sg.id
+  referenced_security_group_id = aws_security_group.jenkins_sg.id
+  from_port = 9000
+  ip_protocol       = "TCP" # semantically equivalent to all ports
+  to_port = 9000
+}
+
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_from_sonarqube" {
+  security_group_id = aws_security_group.sonarqube_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+output "sonarqube_sg" {
+  description = "Id of the sg for sonarqube"
+  value       = aws_security_group.sonarqube_sg.id
+}

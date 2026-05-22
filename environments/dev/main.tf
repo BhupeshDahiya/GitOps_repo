@@ -23,6 +23,13 @@ module "bastion" {
   bastion_eks_profile = module.iam.bastion_eks_profile
 }
 
+module "sonaqube" {
+  source = "../../modules/sonarqube"
+  key_name = aws_key_pair.gitops_key.key_name
+  pvt_sub = module.vpc.pvt_sub
+  sonarqube_sg = module.security.sonarqube_sg
+}
+
 module "jenkins" {
   source        = "../../modules/jenkins"
   jenkins_sg_id = module.security.jenkins_sg
