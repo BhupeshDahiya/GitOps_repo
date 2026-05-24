@@ -1,0 +1,34 @@
+# Disable Alertmanager to save CPU/Memory
+alertmanager:
+  enabled: false
+
+# Configure Grafana UI Limits
+grafana:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "512Mi"
+  # Enable default dashboards for instant visualization
+  defaultDashboardsEnabled: true
+
+# Configure the Prometheus Time-Series Database
+prometheus:
+  prometheusSpec:
+    # Throttle how often it scrapes metrics to save CPU
+    scrapeInterval: "30s"
+    evaluationInterval: "30s"
+    
+    # Cap the database memory footprint
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+        
+    # Only keep metrics for 1 day (Perfect for daily destroy cycles)
+    retention: "1d"

@@ -1,0 +1,46 @@
+# Run Fluent Bit on every single EKS worker node automatically
+kind: DaemonSet
+
+# Restrict resource usage to keep the cluster cheap
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+
+# Input block which collects logs from all containers in the cluster using the tail plugin
+config:
+  inputs: |
+    [INPUT]
+        Name              tail
+        Path              /var/log/containers/*.log
+        multiline.parser  docker, cri
+        Tag               kube.*
+        Mem_Buf_Limit     5MB
+        Skip_Long_Lines   On
+# Enriches logs with Kubernetes metadata using the kubernetes filter plugin, which adds useful information like pod name, namespace, and labels to the logs 
+# also parses JSON logs and merges them into the main log record, making it easier to query and analyze structured logs in Elasticsearch.
+  filters: |
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        Merge_Log           On
+        Merge_Log_Key       app_data
+        Keep_Log            Off
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude On
+# Ships the logs to Elasticsearch using the es output plugin, configured to send logs to the Elasticsearch service we set up earlier.
+# It formats the logs in a way that is compatible with Logstash, which is commonly used for log ingestion in Elasticsearch.
+  outputs: |
+    [OUTPUT]
+        Name            es
+        Match           kube.*
+        Host            elasticsearch.logging.svc.cluster.local
+        Port            9200
+        Replace_Dots    On
+        Retry_Limit     False
+        Logstash_Format On
+        Logstash_Prefix springboot-cluster

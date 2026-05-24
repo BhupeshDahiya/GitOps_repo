@@ -1,0 +1,36 @@
+# 1. Tells Helm to automatically deploy Kibana as a subchart
+global:
+  kibanaEnabled: true
+
+architecture: single-node # using single-node architecture to save resources, perfect for development and testing environments. For production, consider switching to a multi-node setup for better performance and reliability.
+
+# 2. Elasticsearch database limits
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1.5Gi"
+  limits:
+    cpu: "1000m"
+    memory: "2Gi"
+
+esJavaOpts: "-Xms1g -Xmx1g" # setting jvm heap size to 1GB to optimize memory usage for our small cluster
+
+# Provisioning a 10GB EBS vol for persistent storage of logs
+persistence:
+  enabled: true
+  size: 10Gi 
+
+# 3. Kibana UI limits (overriding the subchart defaults)
+kibana:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+  # Pointing Kibana to its parent Elasticsearch node
+  elasticsearch:
+    hosts:
+      - "http://elasticsearch-master:9200"
