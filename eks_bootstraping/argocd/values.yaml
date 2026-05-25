@@ -1,0 +1,65 @@
+# --- GLOBAL CONFIGURATION ---
+global:
+  networkPolicy:
+    enabled: false
+
+# --- ARGOCD CONTROLLER (The Sync Brain) ---
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+# --- ARGOCD SERVER (The Web UI & API) ---
+server:
+  replicas: 1
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+  # Insecure flag allows SSL termination to happen at the Ingress Controller layer
+  extraArgs:
+    - --insecure
+
+# --- ARGOCD REPO SERVER (The Git Fetcher) ---
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+# --- INTERNAL REDIS CACHE ---
+redis:
+  enabled: true
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+# --- DISABLE UNNECESSARY PORTFOLIO BLOAT ---
+applicationSet:
+  enabled: true # Keep enabled for app-of-apps patterns later
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+dex:
+  enabled: false # Disables enterprise single-sign-on (SSO) to save RAM
+
+notifications:
+  enabled: false # Disables Slack/Email alerting engines

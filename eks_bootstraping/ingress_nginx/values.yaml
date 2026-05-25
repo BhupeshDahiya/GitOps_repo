@@ -1,0 +1,29 @@
+controller:
+  # Scale down to a single replica to eliminate extra AWS node compute costs
+  replicaCount: 1
+
+  # Restrict resource footprints so it shares nodes easily with your apps
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "150Mi"
+    limits:
+      cpu: "300m"
+      memory: "300Mi"
+
+  service:
+    enabled: true
+    # AWS-Specific Annotations: Tells EKS exactly how to spin up the cloud infrastructure
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "external"
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    
+    targetPorts:
+      http: http
+      https: http # Map incoming HTTPS/443 to HTTP internally since we are avoiding SSL cert overhead for development
+
+  # Strips out cloud-provider logging bloat to speed up packet routing
+  config:
+    log-format-escape-json: "true"
+    enable-real-ip: "true"
