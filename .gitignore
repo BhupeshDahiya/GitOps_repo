@@ -35,3 +35,10 @@ terraform.rc
 .vscode/
 .idea/
 *.swp
+
+# --- Kubernetes Local Contexts & Tokens ---
+.kube/
+kubeconfig
+*kubeconfig
+*.kubeconfig
+.helm/
