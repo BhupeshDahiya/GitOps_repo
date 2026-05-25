@@ -116,3 +116,32 @@ ssh -A -i bastion.pem ubuntu@bastion_ip # -A : Enables authentication agent forw
 
 # Once inside the Bastion, hop directly onto the new Nexus private IP:
 ssh ubuntu@nexus_ip
+```
+
+# To route traffic to the dashboards hosted on EKS
+
+Because *.portfolio.local is not a real domain on the internet, web browser will not know how to find it.
+
+## 1. Find your AWS LoadBalancer URL
+After running  bootstrap.sh script, execute:
+
+```Bash
+kubectl get svc -n ingress-nginx
+Copy the long EXTERNAL-IP string provided by AWS (e.g., a123bc...amazonaws.com).
+```
+
+## 2. Find the underlying IP Address
+Run a simple ping to grab the active IP behind that load balancer:
+
+```Bash
+ping a123bc...amazonaws.com
+(Copy the resolved IP address, for example: 54.210.43.5)
+```
+
+## 3. Update your local machine's Host file
+Open your local computer's host configuration file (/etc/hosts on Linux/Mac, or C:\Windows\System32\drivers\etc\hosts on Windows) with administrative privileges, and append this line:
+
+```Bash
+54.210.43.5  grafana.portfolio.local kibana.portfolio.local argocd.portfolio.local
+```
+Now, when you type http://argocd.portfolio.local directly into your browser your computer will bypass public DNS registries, hit your AWS Load Balancer, flow through your ingress-nginx controller, and bring up your UI dashboards.
