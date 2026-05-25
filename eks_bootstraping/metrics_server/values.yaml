@@ -1,0 +1,15 @@
+# Secure development defaults for EKS
+apiService:
+  create: true
+
+# Self-signed cert workaround (Required for EKS dev environments to communicate safely)
+extraArgs:
+  - --kubelet-insecure-tls
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limits:
+    cpu: 200m
+    memory: 200Mi

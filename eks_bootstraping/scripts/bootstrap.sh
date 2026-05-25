@@ -31,7 +31,7 @@ helm upgrade --install argocd argo/argo-cd \
 echo "=== DEPLOYING METRICS SERVER ==="
 helm upgrade --install metrics-server bitnami/metrics-server \
   -n kube-system \
-  --set apiService.create=true
+  -f metrics-server/values.yaml
 
   echo "=== DEPLOYING PROMETHEUS/GRAFANA ==="
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \

@@ -120,10 +120,10 @@ ssh ubuntu@nexus_ip
 
 # To route traffic to the dashboards hosted on EKS
 
-Because *.portfolio.local is not a real domain on the internet, web browser will not know how to find it.
+Because *.portfolio.local is not a real domain on the internet web browser will not know how to find it.
 
 ## 1. Find your AWS LoadBalancer URL
-After running  bootstrap.sh script, execute:
+After running bootstrap.sh script
 
 ```Bash
 kubectl get svc -n ingress-nginx
@@ -131,7 +131,7 @@ Copy the long EXTERNAL-IP string provided by AWS (e.g., a123bc...amazonaws.com).
 ```
 
 ## 2. Find the underlying IP Address
-Run a simple ping to grab the active IP behind that load balancer:
+Run a simple ping to grab the active IP behind that load balancer
 
 ```Bash
 ping a123bc...amazonaws.com
@@ -139,7 +139,7 @@ ping a123bc...amazonaws.com
 ```
 
 ## 3. Update your local machine's Host file
-Open your local computer's host configuration file (/etc/hosts on Linux/Mac, or C:\Windows\System32\drivers\etc\hosts on Windows) with administrative privileges, and append this line:
+Open your local computer's host configuration file (/etc/hosts on Linux/Mac, or C:\Windows\System32\drivers\etc\hosts on Windows) with administrative privileges, and append this line
 
 ```Bash
 54.210.43.5  grafana.portfolio.local kibana.portfolio.local argocd.portfolio.local
