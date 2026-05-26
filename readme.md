@@ -118,6 +118,62 @@ ssh -A -i bastion.pem ubuntu@bastion_ip # -A : Enables authentication agent forw
 ssh ubuntu@nexus_ip
 ```
 
+# To establish connetivity to the EKS cluster, and finish the bootstrapping part
+
+- SSH to the bastion host
+- then run the below cmd to get the kubeconfig of your EKS cluster
+```bash
+aws eks update-kubeconfig --region us-east-1 --name portfolio-eks
+```
+- then execute the bootstrapping script 
+
+>1. Run "terraform apply" ➔ Boots up AWS EKS + Networking hardware.
+>2. Run "aws eks update-kubeconfig ..." ➔ Links your bastion to the cloud EKS API.
+>3. Run "./scripts/bootstrap.sh" ➔ Your bastion pushes the platform Helm charts down into EKS.
+
+# The exectuion sequence
+
+### 1. Spin up everything. Bastion boots and auto-installs Helm/Kubectl
+```bash
+terraform apply -auto-approve
+```
+
+### 2. Upload your platform-bootstrap folder to the Bastion host
+```bash
+scp -r -i "your-key.pem" ../platform-bootstrap ubuntu@<BASTION_PUBLIC_IP>:/home/ubuntu/
+```
+
+### 3. SSH directly into your Bastion command center
+```bash
+ssh -i "your-key.pem" ubuntu@<BASTION_PUBLIC_IP>
+```
+
+### 4. Connect Bastion to the private EKS cluster API
+```bash
+aws eks update-kubeconfig --region us-east-1 --name portfolio-eks
+```
+
+### 5. Run your master platform bootstrap layer
+```bash
+cd platform-bootstrap/
+chmod +x scripts/*.sh
+./scripts/bootstrap.sh
+```
+
+# To access EKS from local pc rather than the bastion
+
+- Open a Dynamic Tunnel: Run this command on your local laptop terminal to open a secure proxy tunnel on port 1080:
+
+```Bash
+ssh -i "your-key.pem" -D 1080 -N ubuntu@<BASTION_PUBLIC_IP>
+```
+- Tell your tools to use the proxy: Set an environment variable in your local terminal that forces all Kubernetes traffic through that tunnel:
+
+```Bash
+export HTTPS_PROXY=socks5://127.0.0.1:1080
+```
+- Run locally: Now, you can run aws eks update-kubeconfig and ./scripts/bootstrap.sh directly from your local PC. Your local Helm and Kubectl binaries will automatically shoot their data through the proxy, out the bastion, and straight into the private EKS cluster.
+
 # To route traffic to the dashboards hosted on EKS
 
 Because *.portfolio.local is not a real domain on the internet web browser will not know how to find it.
